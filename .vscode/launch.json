@@ -1,0 +1,26 @@
+// -- ------------------------------------
+// -- Perhatian
+// -- Khusus untuk Windows User : 
+// -- hasil dari Copy Path harus diganti dengan double-backslash \\
+// -- ------------------------------------
+{
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "name": "Run Odoo",
+            "type": "python",
+            "request": "launch",
+            "stopOnEntry": false,
+            "console": "integratedTerminal",
+            "python": "C:/Python38/python.exe",
+            "program": "D:/odoo16/server/odoo-bin",
+            "args": [
+                "--config=D:\\odooAddons\\challange\\.vscode\\odoo-bulog.conf",
+                "--database=v16_challange",
+                // "--update=asb_bulog"
+                // "--update=asb_account_bulog, asb_budget_report, asb_nota_bulog, asb_faktur_bulog"
+            ]
+        }
+    ]
+}

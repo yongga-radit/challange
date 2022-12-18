@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- BAGIAN 1 -->
+
+        <function name="write" model="ir.model.data">
+            <function name="search" model="ir.model.data">
+                <value eval="[('module', '=', 'purchase_requisition'), ('name', '=', 'type_multi')]" />
+            </function>
+            <value eval="{'noupdate': False}" />
+        </function>
+
+
+        <!-- BAGIAN 2 -->
+
+        <function name="write" model="ir.model.data">
+            <function name="search" model="ir.model.data">
+                <value eval="[('module', '=', 'purchase_requisition'), ('name', '=', 'type_single')]" />
+            </function>
+            <value eval="{'noupdate': False}" />
+        </function>
+
+
+        <!-- BAGIAN 3 -->
+
+        <record id="purchase_requisition.type_multi" model="purchase.requisition.type">
+            <field name="name">Purchase Tender</field>
+            <field name="sequence">1</field>
+            <field name="exclusive">exclusive</field>
+            <field name="quantity_copy">copy</field>
+        </record>
+
+
+        <!-- BAGIAN 4 -->
+
+        <record id="purchase_requisition.type_single" model="purchase.requisition.type">
+            <field name="name">Purchase Request</field>
+            <field name="sequence">2</field>
+            <field name="quantity_copy">copy</field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,15 @@
+<odoo>
+
+
+    <record id="group_payment_request_confirm" model="res.groups">
+        <field name="name">Payment Request / Confirm</field>
+    </record>
+
+    <record id="group_payment_request_approve" model="res.groups">
+        <field name="name">Payment Request / Approve</field>
+        <field name="implied_ids" eval="[(4, ref('group_payment_request_confirm'))]"/>
+        <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+    </record>
+
+
+</odoo>

@@ -1,0 +1,847 @@
+<odoo>
+  <data>
+
+
+              <!-- ################# -->
+              <!-- MENU BUKU -->
+              <!-- ################# -->
+
+              <record id="buku_tree_view" model="ir.ui.view">
+                  <field name="name">buku.tree</field>
+                  <field name="model">product.product</field>
+                  <field name="arch" type="xml">
+                      <tree string="Buku">
+                          <field name="default_code"/>
+                          <field name="name"/>
+                          <field name="publisher_id"/>
+                          <field name="author_id"/>
+                          <field name="location_id"/>
+                          <field name="categ_id"/>
+                          <field name="state"/>
+                      </tree>
+                  </field>
+              </record>
+
+              <record id="buku_form_view" model="ir.ui.view">
+                  <field name="name">buku.form</field>
+                  <field name="model">product.product</field>
+                  <field name="arch" type="xml">
+                      <form string="Buku">
+                          <header>
+                              <field name="state" widget="statusbar" statusbar_colors='{"draft":"red","approve":"blue"}'/>
+                          </header>
+
+                          <sheet>
+                              <div class="oe_button_box" name="button_box">
+                                  <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                                      <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                                  </button>
+                              </div>
+                              <field name="image" widget='image' class="oe_avatar" options='{"preview_image": "image_medium", "size": [90, 90]}'/>
+                              <h1>
+                                  <field name="name" default_focus="1" placeholder="Name" required="1"/>
+                              </h1>
+                              <group>
+                                  <field name="publisher_id"/>
+                                  <field name="author_id"/>
+                                  <field name="location_id"/>
+                              </group>
+                              <group>
+                                  <group>
+                                      <field name="default_code"/>
+                                      <field name="categ_id"/>
+                                      <field name="isbn"/>
+                                      <field name="catalog_num"/>
+                                  </group>
+                                  <group>
+                                      <field name="barcode"/>
+                                      <field name="nbpage"/>
+                                      <field name="num_edition"/>
+                                      <field name="lang"/>
+                                  </group>
+                              </group>
+                              <group string="Review" colspan="4">
+                                  <field name="resensi" nolabel="1" colspan="4"/>
+                              </group>
+
+                          </sheet>
+                      </form>
+                  </field>
+              </record>
+
+              <record model="ir.ui.view" id="buku_kanban_view">
+                  <field name="name">buku.kanban</field>
+                  <field name="model">product.product</field>
+                  <field name="arch" type="xml">
+                      <kanban class="o_res_partner_kanban">
+                          <field name="id"/>
+                          <field name="image_small"/>
+                          <field name="default_code"/>
+                          <field name="barcode"/>
+                          <templates>
+                              <t t-name="kanban-box">
+                                  <div class="oe_kanban_global_click o_kanban_record_has_image_fill o_res_partner_kanban">
+                                      <t t-if="record.image_small.raw_value">
+                                          <div class="o_kanban_image_fill_left d-none d-md-block" t-attf-style="background-image:url('#{kanban_image('product.product', 'image_medium', record.id.raw_value)}')"/>
+                                      </t>
+                                      <div class="oe_kanban_details">
+                                          <strong class="oe_partner_heading">
+                                              <t t-if="record.default_code.value">[<field name="default_code"/>]</t>
+                                              <field name="name"/>
+                                          </strong>
+                                          <ul>
+                                              <li t-if="record.barcode.raw_value"><field name="barcode"/></li>
+                                              <li t-if="record.author_id.raw_value"><field name="author_id"/></li>
+                                              <li t-if="record.publisher_id.raw_value"><field name="publisher_id"/></li>
+                                              <li t-if="record.categ_id.raw_value"><field name="categ_id"/></li>
+                                              <li t-if="record.state.raw_value"><field name="state" widget="kanban_label_selection" options="{'classes': {'available': 'success', 'rent': 'warning'}}"/></li>
+                                          </ul>
+                                      </div>
+                                  </div>
+                              </t>
+                          </templates>
+                      </kanban>
+                  </field>
+              </record>
+
+              <record id="buku_buku_action" model="ir.actions.act_window">
+                  <field name="name">Buku</field>
+                  <field name="type">ir.actions.act_window</field>
+                  <field name="res_model">product.product</field>
+                  <field name="view_mode">kanban,tree,form</field>
+                  <field name="view_type">form</field>
+                  <field name="view_id" ref="buku_kanban_view"/>
+              </record>
+
+              <record id="action_kanban_view_buku" model="ir.actions.act_window.view">
+                  <field name="sequence" eval="1"/>
+                  <field name="view_mode">kanban</field>
+                  <field name="view_id" ref="buku_kanban_view"/>
+                  <field name="act_window_id" ref="buku_buku_action"/>
+              </record>
+
+              <record id="action_tree_view_buku" model="ir.actions.act_window.view">
+                  <field name="sequence" eval="2"/>
+                  <field name="view_mode">tree</field>
+                  <field name="view_id" ref="buku_tree_view"/>
+                  <field name="act_window_id" ref="buku_buku_action"/>
+              </record>
+
+              <record id="action_form_view_buku" model="ir.actions.act_window.view">
+                  <field name="sequence" eval="3"/>
+                  <field name="view_mode">form</field>
+                  <field name="view_id" ref="buku_form_view"/>
+                  <field name="act_window_id" ref="buku_buku_action"/>
+              </record>
+
+
+              <!-- ################# -->
+              <!-- MENU ANGGOTA -->
+              <!-- ################# -->
+
+              <record id="anggota_tree_view" model="ir.ui.view">
+                  <field name="name">anggota.tree</field>
+                  <field name="model">res.partner</field>
+                  <field name="arch" type="xml">
+                      <tree string="Anggota">
+                          <field name="display_name" string="Name"/>
+                          <field name="street"/>
+                          <field name="mobile"/>
+                          <field name="city"/>
+                          <field name="country_id"/>
+                          <field name="email"/>
+                      </tree>
+                  </field>
+              </record>
+
+              <record id="anggota_form_view" model="ir.ui.view">
+                  <field name="name">anggota.form</field>
+                  <field name="model">res.partner</field>
+                  <field name="arch" type="xml">
+                      <form string="Anggota">
+                          <sheet>
+                              <div class="oe_button_box" name="button_box">
+                                  <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                                      <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                                  </button>
+                              </div>
+                              <field name="image" widget='image' class="oe_avatar" options='{"preview_image": "image_medium", "size": [90, 90]}'/>
+                              <h1>
+                                  <field name="name" default_focus="1" placeholder="Name" required="1"/>
+                              </h1>
+                              <group>
+                                  <group>
+                                      <label for="street" string="Address"/>
+                                      <div class="o_address_format">
+                                          <field name="street" placeholder="Street..." class="o_address_street"/>
+                                          <field name="street2" placeholder="Street 2..." class="o_address_street"/>
+                                          <field name="city" placeholder="City" class="o_address_city"/>
+                                          <field name="state_id" class="o_address_state" placeholder="State" options='{"no_open": True}' context="{'country_id': country_id, 'zip': zip}"/>
+                                          <field name="zip" placeholder="ZIP" class="o_address_zip"/>
+                                          <field name="country_id" placeholder="Country" class="o_address_country" options='{"no_open": True, "no_create": True}'/>
+                                      </div>
+                                      <field name="website" widget="url" placeholder="e.g. www.odoo.com"/>
+                                  </group>
+                                  <group>
+                                      <field name="phone" widget="phone"/>
+                                      <field name="mobile" widget="phone"/>
+                                      <field name="email" widget="email"/>
+                                      <field name="lang"/>
+                                  </group>
+                              </group>
+                          </sheet>
+                      </form>
+                  </field>
+              </record>
+
+              <record model="ir.ui.view" id="anggota_kanban_view">
+                  <field name="name">anggota.perpustakaan.kanban</field>
+                  <field name="model">res.partner</field>
+                  <field name="arch" type="xml">
+                      <kanban class="o_res_partner_kanban">
+                          <field name="id"/>
+                          <field name="color"/>
+                          <field name="display_name"/>
+                          <field name="title"/>
+                          <field name="email"/>
+                          <field name="phone"/>
+                          <field name="mobile"/>
+                          <field name="street"/>
+                          <field name="zip"/>
+                          <field name="city"/>
+                          <field name="country_id"/>
+                          <field name="image_small"/>
+                          <templates>
+                              <t t-name="kanban-box">
+                                  <div class="oe_kanban_global_click o_kanban_record_has_image_fill o_res_partner_kanban">
+                                      <t t-if="record.image_small.raw_value">
+                                          <div class="o_kanban_image_fill_left d-none d-md-block" t-attf-style="background-image:url('#{kanban_image('res.partner', 'image_medium', record.id.raw_value)}')"/>
+                                      </t>
+                                      <div class="oe_kanban_details">
+                                          <strong class="oe_partner_heading"><field name="display_name"/></strong>
+                                          <ul>
+                                              <li t-if="record.mobile.raw_value"><field name="mobile"/></li>
+                                              <li t-if="record.street.raw_value"><field name="street"/></li>
+                                              <li t-if="record.city.raw_value and record.country_id.raw_value"><field name="city"/>,
+                                                  <field name="country_id"/></li>
+                                              <li t-if="record.email.raw_value" class="o_text_overflow"><field name="email"/></li>
+                                          </ul>
+                                          <div class="oe_kanban_partner_links"/>
+                                      </div>
+                                  </div>
+                              </t>
+                          </templates>
+                      </kanban>
+                  </field>
+              </record>
+
+              <record id="anggota_action" model="ir.actions.act_window">
+                  <field name="name">Anggota Perpustakaan</field>
+                  <field name="type">ir.actions.act_window</field>
+                  <field name="res_model">res.partner</field>
+                  <field name="view_type">form</field>
+                  <field name="view_mode">kanban,tree,form</field>
+                  <field name="domain">[('anggota', '=', True)]</field>
+                  <field name="context">{"default_anggota":1}</field>
+                  <field name="view_id" ref="anggota_kanban_view"/>
+              </record>
+
+              <record id="action_kanban_view_anggota" model="ir.actions.act_window.view">
+                  <field name="sequence" eval="1"/>
+                  <field name="view_mode">kanban</field>
+                  <field name="view_id" ref="anggota_kanban_view"/>
+                  <field name="act_window_id" ref="anggota_action"/>
+              </record>
+
+              <record id="action_tree_view_anggota" model="ir.actions.act_window.view">
+                  <field name="sequence" eval="2"/>
+                  <field name="view_mode">tree</field>
+                  <field name="view_id" ref="anggota_tree_view"/>
+                  <field name="act_window_id" ref="anggota_action"/>
+              </record>
+
+              <record id="action_form_view_anggota" model="ir.actions.act_window.view">
+                  <field name="sequence" eval="3"/>
+                  <field name="view_mode">form</field>
+                  <field name="view_id" ref="anggota_form_view"/>
+                  <field name="act_window_id" ref="anggota_action"/>
+              </record>
+
+
+            <!-- ################# -->
+            <!-- MENU BUKU TERSEDIA -->
+            <!-- ################# -->
+
+            <record id="buku_sedia_action" model="ir.actions.act_window">
+                <field name="name">Buku Tersedia</field>
+                <field name="type">ir.actions.act_window</field>
+                <field name="res_model">product.product</field>
+                <field name="view_mode">kanban,tree</field>
+                <field name="view_type">form</field>
+                <field name="domain">[('state', '=', 'available')]</field>
+                <field name="view_id" ref="buku_kanban_view"/>
+            </record>
+
+            <record id="action_kanban_view_buku_tersedia" model="ir.actions.act_window.view">
+                <field name="sequence" eval="1"/>
+                <field name="view_mode">kanban</field>
+                <field name="view_id" ref="buku_kanban_view"/>
+                <field name="act_window_id" ref="buku_sedia_action"/>
+            </record>
+
+            <record id="action_tree_view_buku_tersedia" model="ir.actions.act_window.view">
+                <field name="sequence" eval="2"/>
+                <field name="view_mode">tree</field>
+                <field name="view_id" ref="buku_tree_view"/>
+                <field name="act_window_id" ref="buku_sedia_action"/>
+            </record>
+
+
+            <!-- ################# -->
+            <!-- MENU BUKU TERSEWA -->
+            <!-- ################# -->
+
+            <record id="buku_sewa_action" model="ir.actions.act_window">
+                <field name="name">Buku Tersewa</field>
+                <field name="type">ir.actions.act_window</field>
+                <field name="res_model">product.product</field>
+                <field name="view_mode">kanban,tree,form</field>
+                <field name="view_type">form</field>
+                <field name="domain">[('state', '=', 'rent')]</field>
+                <field name="view_id" ref="buku_kanban_view"/>
+            </record>
+
+            <record id="action_kanban_view_buku_tersewa" model="ir.actions.act_window.view">
+                <field name="sequence" eval="1"/>
+                <field name="view_mode">kanban</field>
+                <field name="view_id" ref="buku_kanban_view"/>
+                <field name="act_window_id" ref="buku_sewa_action"/>
+            </record>
+
+            <record id="action_tree_view_buku_tersewa" model="ir.actions.act_window.view">
+                <field name="sequence" eval="2"/>
+                <field name="view_mode">tree</field>
+                <field name="view_id" ref="buku_tree_view"/>
+                <field name="act_window_id" ref="buku_sewa_action"/>
+            </record>
+
+
+            <!-- ####################### -->
+            <!-- MENU KARTU PERPUSTAKAAN -->
+            <!-- ####################### -->
+
+            <record id="view_kartu_perpustakaan_tree" model="ir.ui.view">
+                <field name="name">Kartu Perpustakaan Tree</field>
+                <field name="model">kartu.perpustakaan</field>
+                <field name="arch" type="xml">
+                    <tree string="Kartu Perpustakaan">
+                        <field name="name"/>
+                        <field name="partner_id"/>
+                        <field name="state"/>
+                    </tree>
+                </field>
+            </record>
+
+            <record id="view_kartu_perpustakaan_form" model="ir.ui.view">
+                <field name="name">Kartu Perpustakaan Form</field>
+                <field name="model">kartu.perpustakaan</field>
+                <field name="arch" type="xml">
+                    <form string="Kartu Perpustakaan">
+                        <header>
+                            <button name="kartu_confirm" type="object" states="draft" string="Confirm" class="oe_highlight" groups="aa_library.group_petugas_perpus"/>
+                            <field name="state" widget="statusbar" statusbar_visible="draft,confirm"/>
+                        </header>
+                        <sheet>
+                            <group>
+                                <field name="name"/>
+                                <field name="partner_id"/>
+                            </group>
+                            <notebook>
+                                <page string="Books Line">
+                                    <field colspan="4" name="kartu_lines" nolabel="1" widget="one2many_list">
+                                        <tree string="" editable="top">
+                                            <field name="product_id"/>
+                                            <field name="start_date"/>
+                                            <field name="end_date"/>
+                                            <field name="duration"/>
+                                            <field name="state"/>
+                                            <button name="pinjaman_confirm" type="object" states="draft" string="Confirm" icon="fa-check-square"/>
+                                            <button name="pinjaman_done" type="object" states="rent" string="Done" icon="fa-mail-reply"/>
+                                        </tree>
+                                    </field>
+                                </page>
+                            </notebook>
+                            <group string="Notes">
+                                <field name="note" colspan="4" nolabel="1"/>
+                            </group>
+                        </sheet>
+                    </form>
+                </field>
+            </record>
+
+            <record model="ir.actions.act_window" id="kartu_perpustakaan_action">
+                <field name="name">Kartu Perpustakaan</field>
+                <field name="res_model">kartu.perpustakaan</field>
+                <field name="view_type">form</field>
+                <field name="view_mode">tree,form</field>
+            </record>
+
+            <record id="seq_kartu_perpustakaan_new" model="ir.sequence">
+                <field name="name">Kartu Perpustakaan</field>
+                <field name="code">kartu.perpustakaan</field>
+                <field name="prefix">KP/%(y)s/%(month)s/</field>
+                <field name="padding">5</field>
+            </record>
+
+
+            <!-- #################### -->
+            <!-- MENU DAFTAR PINJAMAN -->
+            <!-- #################### -->
+
+            <record id="view_kartu_perpustakaan_line_filter" model="ir.ui.view">
+                <field name="name">kartu.perpustakaan.line.select</field>
+                <field name="model">kartu.perpustakaan.line</field>
+                <field name="arch" type="xml">
+                    <search string="Search Daftar Pinjaman">
+                        <field name="partner_id"/>
+                        <field name="state"/>
+                        <group expand="1" string="Group By">
+                            <filter string="Member" name="group_by_anggota" context="{'group_by': 'partner_id'}"/>
+                            <filter string="State" name="group_by_state" context="{'group_by': 'state'}"/>
+                        </group>
+                    </search>
+                </field>
+            </record>
+
+            <record id="view_kartu_perpustakaan_line_tree" model="ir.ui.view">
+                <field name="name">Kartu Perpustakaan Line Tree</field>
+                <field name="model">kartu.perpustakaan.line</field>
+                <field name="arch" type="xml">
+                    <tree string="Daftar Pinjaman" create="false" decoration-info="state == 'draft'" decoration-danger="state == 'rent'" decoration-muted="state == 'return'">
+                        <field name="nama_kartu"/>
+                        <field name="partner_id"/>
+                        <field name="product_id"/>
+                        <field name="start_date"/>
+                        <field name="end_date"/>
+                        <field name="duration"/>
+                        <field name="state"/>
+                    </tree>
+                </field>
+            </record>
+
+            <record model="ir.actions.act_window" id="daftar_pinjaman_action">
+                <field name="name">Daftar Pinjaman</field>
+                <field name="res_model">kartu.perpustakaan.line</field>
+                <field name="view_type">form</field>
+                <field name="view_mode">tree</field>
+                <field name="context">{'search_default_state': 'rent'}</field>
+            </record>
+
+
+            <!-- ######## -->
+            <!-- MENU RAK -->
+            <!-- ######## -->
+
+            <record id="lokasi_buku_tree_view" model="ir.ui.view">
+                <field name="name">lokasi.buku.tree</field>
+                <field name="model">stock.location</field>
+                <field name="arch" type="xml">
+                    <tree string="Lokasi">
+                        <field name="display_name"/>
+                        <field name="location_id"/>
+                        <field name="name"/>
+                    </tree>
+                </field>
+            </record>
+
+            <record id="lokasi_buku_form_view" model="ir.ui.view">
+                <field name="name">lokasi.buku.form</field>
+                <field name="model">stock.location</field>
+                <field name="arch" type="xml">
+                    <form string="Lokasi">
+                        <sheet>
+                            <group>
+                                <field name="name"/>
+                                <field name="location_id" domain="[('lokasi_buku','=',True)]"/>
+                            </group>
+                        </sheet>
+                    </form>
+                </field>
+            </record>
+
+            <record id="buku_lokasi_action" model="ir.actions.act_window">
+                <field name="name">Lokasi Buku</field>
+                <field name="type">ir.actions.act_window</field>
+                <field name="res_model">stock.location</field>
+                <field name="view_type">form</field>
+                <field name="view_mode">tree,form</field>
+                <field name="domain">[('lokasi_buku', '=', True)]</field>
+                <field name="context">{"default_lokasi_buku":1}</field>
+                <field name="view_id" ref="lokasi_buku_tree_view"/>
+            </record>
+
+            <record id="action_tree_view_lokasi_buku" model="ir.actions.act_window.view">
+                <field name="sequence" eval="1"/>
+                <field name="view_mode">tree</field>
+                <field name="view_id" ref="lokasi_buku_tree_view"/>
+                <field name="act_window_id" ref="buku_lokasi_action"/>
+            </record>
+
+            <record id="action_form_view_lokasi_buku" model="ir.actions.act_window.view">
+                <field name="sequence" eval="2"/>
+                <field name="view_mode">form</field>
+                <field name="view_id" ref="lokasi_buku_form_view"/>
+                <field name="act_window_id" ref="buku_lokasi_action"/>
+            </record>
+
+
+            <!-- ############ -->
+            <!-- MENU PENULIS -->
+            <!-- ############ -->
+
+            <record id="penulis_tree_view" model="ir.ui.view">
+                <field name="name">penulis.tree</field>
+                <field name="model">res.partner</field>
+                <field name="arch" type="xml">
+                    <tree string="Penulis">
+                        <field name="display_name" string="Name"/>
+                        <field name="street"/>
+                        <field name="mobile"/>
+                        <field name="city"/>
+                        <field name="country_id"/>
+                        <field name="email"/>
+                    </tree>
+                </field>
+            </record>
+
+            <record id="penulis_form_view" model="ir.ui.view">
+                <field name="name">penulis.form</field>
+                <field name="model">res.partner</field>
+                <field name="arch" type="xml">
+                    <form string="Penulis">
+                        <sheet>
+                            <div class="oe_button_box" name="button_box">
+                                <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                                    <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                                </button>
+                            </div>
+                            <field name="image" widget='image' class="oe_avatar" options='{"preview_image": "image_medium", "size": [90, 90]}'/>
+                            <h1>
+                                <field name="name" default_focus="1" placeholder="Name" required="1"/>
+                            </h1>
+                            <group>
+                                <group>
+                                    <label for="street" string="Address"/>
+                                    <div class="o_address_format">
+                                        <field name="street" placeholder="Street..." class="o_address_street"/>
+                                        <field name="street2" placeholder="Street 2..." class="o_address_street"/>
+                                        <field name="city" placeholder="City" class="o_address_city"/>
+                                        <field name="state_id" class="o_address_state" placeholder="State" options='{"no_open": True}' context="{'country_id': country_id, 'zip': zip}"/>
+                                        <field name="zip" placeholder="ZIP" class="o_address_zip"/>
+                                        <field name="country_id" placeholder="Country" class="o_address_country" options='{"no_open": True, "no_create": True}'/>
+                                    </div>
+                                    <field name="website" widget="url" placeholder="e.g. www.odoo.com"/>
+                                </group>
+                                <group>
+                                    <field name="phone" widget="phone"/>
+                                    <field name="mobile" widget="phone"/>
+                                    <field name="email" widget="email"/>
+                                    <field name="lang"/>
+                                </group>
+                            </group>
+                            <group col="4" string="Biography">
+                                <field name="born_date"/>
+                                <field name="death_date"/>
+                                <field name="biography" colspan="4"/>
+                            </group>
+                        </sheet>
+                    </form>
+                </field>
+            </record>
+
+            <record model="ir.ui.view" id="penulis_kanban_view">
+                <field name="name">penulis.perpustakaan.kanban</field>
+                <field name="model">res.partner</field>
+                <field name="arch" type="xml">
+                    <kanban class="o_res_partner_kanban">
+                        <field name="id"/>
+                        <field name="color"/>
+                        <field name="display_name"/>
+                        <field name="title"/>
+                        <field name="email"/>
+                        <field name="phone"/>
+                        <field name="mobile"/>
+                        <field name="street"/>
+                        <field name="zip"/>
+                        <field name="city"/>
+                        <field name="country_id"/>
+                        <field name="image_small"/>
+                        <templates>
+                            <t t-name="kanban-box">
+                                <div class="oe_kanban_global_click o_kanban_record_has_image_fill o_res_partner_kanban">
+                                    <t t-if="record.image_small.raw_value">
+                                        <div class="o_kanban_image_fill_left d-none d-md-block" t-attf-style="background-image:url('#{kanban_image('res.partner', 'image_medium', record.id.raw_value)}')"/>
+                                    </t>
+                                    <div class="oe_kanban_details">
+                                        <strong class="oe_partner_heading"><field name="display_name"/></strong>
+                                        <ul>
+                                            <li t-if="record.mobile.raw_value"><field name="mobile"/></li>
+                                            <li t-if="record.street.raw_value"><field name="street"/></li>
+                                            <li t-if="record.city.raw_value and record.country_id.raw_value"><field name="city"/>,
+                                                <field name="country_id"/></li>
+                                            <li t-if="record.email.raw_value" class="o_text_overflow"><field name="email"/></li>
+                                        </ul>
+                                        <div class="oe_kanban_partner_links"/>
+                                    </div>
+                                </div>
+                            </t>
+                        </templates>
+                    </kanban>
+                </field>
+            </record>
+
+            <record id="penulis_action" model="ir.actions.act_window">
+                <field name="name">Penulis Perpustakaan</field>
+                <field name="type">ir.actions.act_window</field>
+                <field name="res_model">res.partner</field>
+                <field name="view_type">form</field>
+                <field name="view_mode">kanban,tree,form</field>
+                <field name="domain">[('penulis', '=', True)]</field>
+                <field name="context">{"default_penulis":1}</field>
+                <field name="view_id" ref="penulis_kanban_view"/>
+            </record>
+
+            <record id="action_kanban_view_penulis" model="ir.actions.act_window.view">
+                <field name="sequence" eval="1"/>
+                <field name="view_mode">kanban</field>
+                <field name="view_id" ref="penulis_kanban_view"/>
+                <field name="act_window_id" ref="penulis_action"/>
+            </record>
+
+            <record id="action_tree_view_penulis" model="ir.actions.act_window.view">
+                <field name="sequence" eval="2"/>
+                <field name="view_mode">tree</field>
+                <field name="view_id" ref="penulis_tree_view"/>
+                <field name="act_window_id" ref="penulis_action"/>
+            </record>
+
+            <record id="action_form_view_penulis" model="ir.actions.act_window.view">
+                <field name="sequence" eval="3"/>
+                <field name="view_mode">form</field>
+                <field name="view_id" ref="penulis_form_view"/>
+                <field name="act_window_id" ref="penulis_action"/>
+            </record>
+
+
+            <!-- ############# -->
+            <!-- MENU PENERBIT -->
+            <!-- ############# -->
+
+            <record id="penerbit_tree_view" model="ir.ui.view">
+                <field name="name">penerbit.tree</field>
+                <field name="model">res.partner</field>
+                <field name="arch" type="xml">
+                    <tree string="Penerbit">
+                        <field name="display_name" string="Name"/>
+                        <field name="street"/>
+                        <field name="mobile"/>
+                        <field name="city"/>
+                        <field name="country_id"/>
+                        <field name="email"/>
+                    </tree>
+                </field>
+            </record>
+
+            <record id="penerbit_form_view" model="ir.ui.view">
+                <field name="name">penerbit.form</field>
+                <field name="model">res.partner</field>
+                <field name="arch" type="xml">
+                    <form string="Penerbit">
+                        <sheet>
+                            <div class="oe_button_box" name="button_box">
+                                <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                                    <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                                </button>
+                            </div>
+                            <field name="image" widget='image' class="oe_avatar" options='{"preview_image": "image_medium", "size": [90, 90]}'/>
+                            <h1>
+                                <field name="name" default_focus="1" placeholder="Name" required="1"/>
+                            </h1>
+                            <group>
+                                <group>
+                                    <label for="street" string="Address"/>
+                                    <div class="o_address_format">
+                                        <field name="street" placeholder="Street..." class="o_address_street"/>
+                                        <field name="street2" placeholder="Street 2..." class="o_address_street"/>
+                                        <field name="city" placeholder="City" class="o_address_city"/>
+                                        <field name="state_id" class="o_address_state" placeholder="State" options='{"no_open": True}' context="{'country_id': country_id, 'zip': zip}"/>
+                                        <field name="zip" placeholder="ZIP" class="o_address_zip"/>
+                                        <field name="country_id" placeholder="Country" class="o_address_country" options='{"no_open": True, "no_create": True}'/>
+                                    </div>
+                                    <field name="website" widget="url" placeholder="e.g. www.odoo.com"/>
+                                </group>
+                                <group>
+                                    <field name="phone" widget="phone"/>
+                                    <field name="mobile" widget="phone"/>
+                                    <field name="email" widget="email"/>
+                                    <field name="lang"/>
+                                </group>
+                            </group>
+                        </sheet>
+                    </form>
+                </field>
+            </record>
+
+            <record model="ir.ui.view" id="penerbit_kanban_view">
+                <field name="name">penerbit.perpustakaan.kanban</field>
+                <field name="model">res.partner</field>
+                <field name="arch" type="xml">
+                    <kanban class="o_res_partner_kanban">
+                        <field name="id"/>
+                        <field name="color"/>
+                        <field name="display_name"/>
+                        <field name="title"/>
+                        <field name="email"/>
+                        <field name="phone"/>
+                        <field name="mobile"/>
+                        <field name="street"/>
+                        <field name="zip"/>
+                        <field name="city"/>
+                        <field name="country_id"/>
+                        <field name="image_small"/>
+                        <templates>
+                            <t t-name="kanban-box">
+                                <div class="oe_kanban_global_click o_kanban_record_has_image_fill o_res_partner_kanban">
+                                    <t t-if="record.image_small.raw_value">
+                                        <div class="o_kanban_image_fill_left d-none d-md-block" t-attf-style="background-image:url('#{kanban_image('res.partner', 'image_medium', record.id.raw_value)}')"/>
+                                    </t>
+                                    <div class="oe_kanban_details">
+                                        <strong class="oe_partner_heading"><field name="display_name"/></strong>
+                                        <ul>
+                                            <li t-if="record.mobile.raw_value"><field name="mobile"/></li>
+                                            <li t-if="record.street.raw_value"><field name="street"/></li>
+                                            <li t-if="record.city.raw_value and record.country_id.raw_value"><field name="city"/>,
+                                                <field name="country_id"/></li>
+                                            <li t-if="record.email.raw_value" class="o_text_overflow"><field name="email"/></li>
+                                        </ul>
+                                        <div class="oe_kanban_partner_links"/>
+                                    </div>
+                                </div>
+                            </t>
+                        </templates>
+                    </kanban>
+                </field>
+            </record>
+
+            <record id="penerbit_action" model="ir.actions.act_window">
+                <field name="name">Penerbit</field>
+                <field name="type">ir.actions.act_window</field>
+                <field name="res_model">res.partner</field>
+                <field name="view_type">form</field>
+                <field name="view_mode">kanban,tree,form</field>
+                <field name="domain">[('penerbit', '=', True)]</field>
+                <field name="context">{"default_penerbit":1}</field>
+                <field name="view_id" ref="penerbit_kanban_view"/>
+            </record>
+
+            <record id="action_kanban_view_penerbit" model="ir.actions.act_window.view">
+                <field name="sequence" eval="1"/>
+                <field name="view_mode">kanban</field>
+                <field name="view_id" ref="penerbit_kanban_view"/>
+                <field name="act_window_id" ref="penerbit_action"/>
+            </record>
+
+            <record id="action_tree_view_penerbit" model="ir.actions.act_window.view">
+                <field name="sequence" eval="2"/>
+                <field name="view_mode">tree</field>
+                <field name="view_id" ref="penerbit_tree_view"/>
+                <field name="act_window_id" ref="penerbit_action"/>
+            </record>
+
+            <record id="action_form_view_penerbit" model="ir.actions.act_window.view">
+                <field name="sequence" eval="3"/>
+                <field name="view_mode">form</field>
+                <field name="view_id" ref="penerbit_form_view"/>
+                <field name="act_window_id" ref="penerbit_action"/>
+            </record>
+
+
+            <!-- ############# -->
+            <!-- MENU KATEGORI -->
+            <!-- ############# -->
+
+            <record id="kategori_buku_tree_view" model="ir.ui.view">
+                <field name="name">kategori.buku.tree</field>
+                <field name="model">product.category</field>
+                <field name="arch" type="xml">
+                    <tree string="Kategori">
+                        <field name="display_name"/>
+                        <field name="parent_id"/>
+                        <field name="name"/>
+                    </tree>
+                </field>
+            </record>
+
+            <record id="kategori_buku_form_view" model="ir.ui.view">
+                <field name="name">kategori.buku.form</field>
+                <field name="model">product.category</field>
+                <field name="arch" type="xml">
+                    <form string="Kategori">
+                        <sheet>
+                            <group>
+                                <field name="name"/>
+                                <field name="parent_id"/>
+                            </group>
+                        </sheet>
+                    </form>
+                </field>
+            </record>
+
+            <record id="buku_kategori_action" model="ir.actions.act_window">
+                <field name="name">Kategori Buku</field>
+                <field name="res_model">product.category</field>
+                <field name="type">ir.actions.act_window</field>
+                <field name="view_type">form</field>
+                <field name="view_mode">tree,form</field>
+                <field name="view_id" ref="kategori_buku_tree_view"/>
+            </record>
+
+            <record id="action_tree_view_kategori_buku" model="ir.actions.act_window.view">
+                <field name="sequence" eval="1"/>
+                <field name="view_mode">tree</field>
+                <field name="view_id" ref="kategori_buku_tree_view"/>
+                <field name="act_window_id" ref="buku_kategori_action"/>
+            </record>
+
+            <record id="action_form_view_kategori_buku" model="ir.actions.act_window.view">
+                <field name="sequence" eval="2"/>
+                <field name="view_mode">form</field>
+                <field name="view_id" ref="kategori_buku_form_view"/>
+                <field name="act_window_id" ref="buku_kategori_action"/>
+            </record>
+
+            <!-- MENU PERPUSTAKAAN -->
+
+            <menuitem id="menubar_perpustakaan" name="Perpustakaan" web_icon="aa_library,static/description/icon.png"/>
+
+            <menuitem id="menu_perpustakaan" name="Informasi" parent="menubar_perpustakaan"/>
+
+            <menuitem id="submenu_books" name="Buku" parent="menu_perpustakaan" action="buku_buku_action"/>
+            <menuitem id="submenu_members" name="Anggota" parent="menu_perpustakaan" action="anggota_action"/>
+
+            <menuitem id="menu_perpustakaan_pinjam" name="Pinjaman" parent="menubar_perpustakaan"/>
+
+            <menuitem id="submenu_books_tersedia" name="Buku Tersedia" parent="menu_perpustakaan_pinjam" action="buku_sedia_action"/>
+            <menuitem id="submenu_books_tersewa" name="Buku Tersewa" parent="menu_perpustakaan_pinjam" action="buku_sewa_action"/>
+            <menuitem id="submenu_books_kartu" name="Kartu Perpustakaan" parent="menu_perpustakaan_pinjam" action="kartu_perpustakaan_action"/>
+            <menuitem id="submenu_books_daftar_pinjaman" name="Daftar Pinjaman" parent="menu_perpustakaan_pinjam" action="daftar_pinjaman_action"/>
+
+            <menuitem id="menu_perpustakaan_config" name="Konfigurasi" parent="menubar_perpustakaan"/>
+
+            <menuitem id="submenu_config" name="Rak" parent="menu_perpustakaan_config" action="buku_lokasi_action"/>
+            <menuitem id="submenu_penulis" name="Penulis" parent="menu_perpustakaan_config" action="penulis_action"/>
+            <menuitem id="submenu_penerbit" name="Penerbit" parent="menu_perpustakaan_config" action="penerbit_action"/>
+            <menuitem id="submenu_kategori" name="Kategori" parent="menu_perpustakaan_config" action="buku_kategori_action"/>
+
+  </data>
+</odoo>

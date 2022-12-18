@@ -1,0 +1,159 @@
+<odoo>
+	<data>
+
+
+		<!-- TREE VIEW PURCHASE REQUEST LINE -->
+
+		<record id="purchase_requisition_line_tree_view" model="ir.ui.view">
+			<field name="name">purchase.requisition.line.tree</field>
+			<field name="model">purchase.requisition.line</field>
+			<field name="arch" type="xml">
+				<tree string="Purchase Requisition Line">
+					<field name="requisition_id" string="Purchase Request"/>
+					<field name="product_id"/>
+					<field name="product_qty"/>
+					<field name="qty_ordered"/>
+					<field name="product_uom_id" string="UoM"/>
+					<field name="price_unit"/>
+				</tree>
+			</field>
+		</record>
+
+
+		<!-- INHERIT FORM PURCHASE AGGREMENT -->
+
+		<record model="ir.ui.view" id="view_purchase_requisition_form_custom">
+			<field name="name">purchase.requisition.form.custom</field>
+			<field name="model">purchase.requisition</field>
+			<field name="inherit_id" ref="purchase_requisition.view_purchase_requisition_form"/>
+			<field name="arch" type="xml">
+
+				<button name="%(purchase_requisition.action_purchase_requisition_to_so)d" position="replace"/>
+
+				<button name="%(purchase_requisition.action_purchase_requisition_to_so)d" position="replace">
+					<button name="%(purchase_requisition.action_purchase_requisition_to_so)d" type="action" string="New Quotation" class="btn-primary" attrs="{'invisible': [('state', '!=', 'open')]}"/>
+				</button>
+
+			</field>
+		</record>
+
+
+		<!-- EDIT ACTION PURCHASE AGGREMENT -->
+
+		<record model="ir.actions.act_window" id="purchase_requisition.action_purchase_requisition">
+			<field name="name">Purchase Tenders</field>
+			<field name="domain">[('type_id.exclusive', '=', 'exclusive')]</field>
+			<field name="context">{'default_type_id': 2}</field>
+			<field name="help" type="html">
+				<p class="o_view_nocontent_smiling_face">
+                    Start a new purchase request
+				</p>
+				<p>
+                    Once the tenders have been registered, you can review and compare them and you can validate only 1 RfQ and cancel the others.
+				</p>
+			</field>
+		</record>
+
+
+		<!-- CREATE ACTION PURCHASE REQUEST -->
+
+		<record model="ir.actions.act_window" id="action_purchase_request">
+			<field name="name">Purchase Requests</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">purchase.requisition</field>
+			<field name="view_mode">tree,kanban,form</field>
+			<field name="domain">[('type_id.exclusive', '=', 'multiple')]</field>
+			<field name="context">{'default_type_id': 1}</field>
+			<field name="search_view_id" ref="purchase_requisition.view_purchase_requisition_filter"/>
+			<field name="help" type="html">
+				<p class="o_view_nocontent_smiling_face">
+					Start a new purchase request
+				</p>
+				<p>
+					You can record the products you need to buy and generate the creation of RfQs to vendors. Once the tenders have
+					been registered, you can review and compare them and you can validate some others.
+				</p>
+			</field>
+		</record>
+
+
+		<!-- EDIT MENUITEM PURCHASE AGGREMENT -->
+
+		<menuitem id="purchase_requisition.menu_purchase_requisition_pro_mgt" name="Purchase Tenders" parent="purchase.menu_procurement_management" action="purchase_requisition.action_purchase_requisition" sequence="1"/>
+
+		<!-- CREATE MENUITEM PURCHASE REQUEST -->
+
+		<menuitem id="menu_purchase_request" name="Purchase Requests" parent="purchase.menu_procurement_management" action="action_purchase_request" sequence="2" />
+
+		<!-- EDIT SEQUENCE MENUITEM RFQ -->
+
+		<menuitem action="purchase.purchase_rfq" id="purchase.menu_purchase_rfq" parent="purchase.menu_procurement_management" sequence="3"/>
+
+
+
+
+		<!-- WIZARD MERGER PURCHASE REQUEST -->
+
+		<record id="merger_purchase_request_wizard_view_form" model="ir.ui.view">
+			<field name="name">merger.purchase.request.form</field>
+			<field name="model">merger.purchase.request</field>
+			<field name="arch" type="xml">
+				<form string="Wizard Form">
+					<group colspan="4">
+						<field name="partner_id" colspan="4"/>
+						<separator string="PR Lines" colspan="4"/>
+						<field name="request_line_ids" nolabel="1" colspan="4"/>
+					</group>
+					<footer>
+						<button name="action_merger" type="object" string="Merger" class="oe_highlight"/>
+                        or
+						<button string="Cancel" special="cancel"/>
+					</footer>
+				</form>
+			</field>
+		</record>
+
+		<!-- ACTION WIZARD MERGER PURCHASE REQUEST -->
+
+		<record id="merger_purchase_request_wizard_action" model="ir.actions.act_window">
+			<field name="name">Merger Purchase Request</field>
+			<field name="res_model">merger.purchase.request</field>
+			<field name="view_mode">form</field>
+			<field name="target">new</field>
+			<field name="binding_model_id" ref="model_merger_purchase_request"/>
+			<field name="binding_view_types">form</field>
+		</record>
+
+		<!-- CREATE MENUITEM MERGER PURCHASE REQUEST -->
+
+		<menuitem id="menu_item_merger_purchase_request_wizard" name="Merger PR to RFQ" parent="purchase.menu_procurement_management" action="merger_purchase_request_wizard_action"/>
+
+
+
+
+		<!-- INHERIT FORM RFQ / PURCHASE ORDER -->
+
+		<record model="ir.ui.view" id="purchase_order_form_inherit_custom">
+			<field name="name">purchase.order.form.custom</field>
+			<field name="model">purchase.order</field>
+			<field name="inherit_id" ref="purchase_requisition.purchase_order_form_inherit"/>
+			<field name="arch" type="xml">
+
+				<field name="requisition_id" position="replace">
+					<field name="requisition_id" readonly="1" attrs="{'invisible': [('requisition_id', '=', False)]}" string="Purchase Requisitions"/>
+					<field name="requisition_ids" readonly="1" attrs="{'invisible': [('requisition_id', '!=', False)]}" widget="many2many_tags"/>
+				</field>
+
+			</field>
+		</record>
+
+
+		<!-- INHERIT ACTION SMART BUTTON RFQ ON FORM PR -->
+
+		<record model="ir.actions.act_window" id="purchase_requisition.action_purchase_requisition_list">
+			<field name="domain">['|', ('requisition_id','=',active_id), ('requisition_ids','=',active_id)]</field>
+		</record>
+
+
+	</data>
+</odoo>

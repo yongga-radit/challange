@@ -1,0 +1,132 @@
+<odoo>
+    <data>
+
+
+
+        <!-- APPROVAL PAYMENT REQUEST -->
+
+        <record id="approval_payment_request_tree_view" model="ir.ui.view">
+            <field name="name">payment.request.tree</field>
+            <field name="model">payment.request</field>
+            <field name="arch" type="xml">
+                <tree decoration-info="state == 'draft'" decoration-danger="state == 'confirm'" decoration-muted="state == 'cancel'" string="Payment Request">
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="user_id"/>
+                    <field name="employee_id"/>
+                    <field name="amount_total"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="approval_payment_request_form_view" model="ir.ui.view">
+            <field name="name">payment.request.form</field>
+            <field name="model">payment.request</field>
+            <field name="arch" type="xml">
+                <form string="Payment Request">
+                    <header>
+                        <button name="payment_open" type="object" states="draft" string="Confirm" class="oe_highlight"/>
+                        <button name="payment_draft" type="object" states="confirm" string="Set to Draft"/>
+                        <button name="payment_done" type="object" states="confirm" string="Approve" class="oe_highlight"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,confirm,done,paid"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name"/>
+                            </h1>
+                        </div>
+                        <group col="4">
+                            <field name="date"/>
+                            <field name="user_id"/>
+                            <field name="employee_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="department_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="description" colspan="4"/>
+                            <field name="type"/>
+                        </group>
+                        <notebook>
+                            <page string="Components Lines">
+                                <field name="payment_line" nolabel="1" widget="one2many_list">
+                                    <tree editable="bottom">
+                                        <field name="name"/>
+                                        <field name="invoice_id"/>
+                                        <field name="amount"/>
+                                        <field name="state"/>
+                                    </tree>
+                                </field>
+                                <group class="oe_subtotal_footer oe_right" colspan="2" name="payment_total">
+                                    <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+                                        <label for="amount_total" />
+                                    </div>
+                                    <field name="amount_total" nolabel="1" class="oe_subtotal_footer_separator"/>
+                                </group>
+                                <div class="oe_clear"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+
+        <!-- ACTION PAYMENT REQUEST -->
+
+        <record model="ir.actions.act_window" id="approval_payment_request_action">
+            <field name="name">Approval Payment Request</field>
+            <field name="res_model">payment.request</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'default_type':'apr'}</field>
+        </record>
+
+
+        <!-- SEQUENCE -->
+
+        <record id="seq_approval_payment_request" model="ir.sequence">
+            <field name="name">Approval Payment Request</field>
+            <field name="code">approval.payment.request</field>
+            <field name="prefix">APR/%(y)s/%(month)s/</field>
+            <field name="padding">5</field>
+        </record>
+
+        <record id="seq_approval_advance_payment" model="ir.sequence">
+            <field name="name">Approval Advance Payment</field>
+            <field name="code">approval.advance.payment</field>
+            <field name="prefix">AAP/%(y)s/%(month)s/</field>
+            <field name="padding">5</field>
+        </record>
+
+        <record id="seq_approval_settlements" model="ir.sequence">
+            <field name="name">Approval Settlements</field>
+            <field name="code">approval.settlements</field>
+            <field name="prefix">AS/%(y)s/%(month)s/</field>
+            <field name="padding">5</field>
+        </record>
+
+
+        <!-- MENU ITEM -->
+
+        <menuitem id="menu_approval_payment" name="Approval" parent="account.menu_finance" sequence="3"/>
+        <menuitem id="menu_approval_payment_request" name="Payment Request" parent="menu_approval_payment" action="approval_payment_request_action"/>
+
+
+        <!-- INHERIT BANK STATEMENT -->
+
+        <record id="inherit_bank_statement_line_form" model="ir.ui.view">
+            <field name="name">bank.statement.line.inherit</field>
+            <field name="model">account.bank.statement</field>
+            <field name="inherit_id" ref="account.view_bank_statement_form"/>
+            <field name="arch" type="xml">
+                <field name="payment_ref" position="before">
+                    <field name="payment_request_line_id"/>
+                </field>
+            </field>
+        </record>
+
+
+    </data>
+</odoo>

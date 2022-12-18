@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+anggota_perpus,anggota.perpus,model_kartu_perpustakaan,group_anggota_perpus,1,0,0,0
+anggota_perpus_line,anggota.perpus.line,model_kartu_perpustakaan_line,group_anggota_perpus,1,0,0,0
+petugas_perpus,petugas.perpus,model_kartu_perpustakaan,group_petugas_perpus,1,1,1,1
+petugas_perpus_line,petugas.perpus.line,model_kartu_perpustakaan_line,group_petugas_perpus,1,1,1,1

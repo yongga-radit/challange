@@ -1,0 +1,394 @@
+<odoo>
+    <data>
+
+
+
+        <!-- APPROVAL PAYMENT REQUEST -->
+
+        <record id="approval_payment_request_tree_view" model="ir.ui.view">
+            <field name="name">payment.request.tree</field>
+            <field name="model">payment.request</field>
+            <field name="arch" type="xml">
+                <tree decoration-info="state == 'draft'" decoration-danger="state == 'confirm'" decoration-muted="state == 'cancel'" string="Payment Request">
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="user_id"/>
+                    <field name="employee_id"/>
+                    <field name="amount_total"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="approval_payment_request_form_view" model="ir.ui.view">
+            <field name="name">payment.request.form</field>
+            <field name="model">payment.request</field>
+            <field name="arch" type="xml">
+                <form string="Payment Request">
+                    <header>
+                        <button name="payment_open" type="object" states="draft" string="Confirm" class="oe_highlight" groups="aa_payment_request.group_payment_request_confirm"/>
+                        <button name="payment_draft" type="object" states="confirm" string="Set to Draft"/>
+                        <button name="payment_done" type="object" states="confirm" string="Approve" class="oe_highlight" groups="aa_payment_request.group_payment_request_approve"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,confirm,done,paid"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button class="oe_stat_button" name="open_journal" type="object" icon="fa-pencil">
+                                <field string="Journal" name="count_journal" widget="statinfo"/>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name"/>
+                            </h1>
+                        </div>
+                        <group col="4">
+                            <field name="date"/>
+                            <field name="user_id"/>
+                            <field name="employee_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="department_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="description" colspan="4"/>
+                            <field name="currency_id" invisible='True'/>
+                            <field name="type" invisible='True'/>
+                        </group>
+                        <notebook>
+                            <page string="Components Lines">
+                                <field name="payment_line" nolabel="1" widget="one2many_list">
+                                    <tree editable="bottom">
+                                        <field name="name"/>
+                                        <field name="invoice_id"/>
+                                        <field name="amount"/>
+                                        <field name="state"/>
+                                        <field name="currency_id" invisible='True'/>
+                                    </tree>
+                                </field>
+                                <group class="oe_subtotal_footer oe_right" colspan="2" name="payment_total">
+                                    <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+                                        <label for="amount_total" />
+                                    </div>
+                                    <field name="amount_total" nolabel="1" class="oe_subtotal_footer_separator"/>
+                                </group>
+                                <div class="oe_clear"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+
+        <!-- APPROVAL ADVANCE PAYMENT -->
+
+        <record id="approval_advance_payment_tree_view" model="ir.ui.view">
+            <field name="name">approval.advance.payment.tree</field>
+            <field name="model">payment.request</field>
+            <field name="arch" type="xml">
+                <tree decoration-info="state == 'draft'" decoration-danger="state == 'confirm'" decoration-muted="state == 'cancel'" string="Payment Request">
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="user_id"/>
+                    <field name="amount_total"/>
+                    <field name="method"/>
+                    <field name="account_number"/>
+                    <field name="account_name"/>
+                    <field name="bank_name"/>
+                    <field name="advance_payment_id"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="approval_advance_payment_form_view" model="ir.ui.view">
+            <field name="name">approval.advance.payment.form</field>
+            <field name="model">payment.request</field>
+            <field name="arch" type="xml">
+                <form string="Approval Advance Payment">
+                    <header>
+                        <button name="payment_open" type="object" states="draft" string="Confirm" class="oe_highlight" groups="aa_payment_request.group_payment_request_confirm"/>
+                        <button name="payment_draft" type="object" states="confirm" string="Set to Draft"/>
+                        <button name="payment_done" type="object" states="confirm" string="Approve" class="oe_highlight" groups="aa_payment_request.group_payment_request_approve"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,confirm,done,paid"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button class="oe_stat_button" name="open_journal" type="object" icon="fa-pencil">
+                                <field string="Journal" name="count_journal" widget="statinfo"/>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name"/>
+                            </h1>
+                        </div>
+                        <group col="4">
+                            <field name="date"/>
+                            <field name="user_id"/>
+                            <field name="employee_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="department_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="description" colspan="4"/>
+                            <field name="currency_id" invisible='True'/>
+                            <field name="type" invisible='True'/>
+                        </group>
+                        <group string="Cara Pencairan">
+                            <field name="method"/>
+                            <field name="account_number" attrs="{'invisible':[('method','=','cash')], 'required':[('method','!=','cash')]}"/>
+                            <field name="account_name" attrs="{'invisible':[('method','=','cash')], 'required':[('method','!=','cash')]}"/>
+                            <field name="bank_name" attrs="{'invisible':[('method','=','cash')], 'required':[('method','!=','cash')]}"/>
+                        </group>
+                        <notebook>
+                            <page string="Components Lines">
+                                <field name="payment_line" nolabel="1" widget="one2many_list">
+                                    <tree editable="bottom">
+                                        <field name="name"/>
+                                        <field name="amount"/>
+                                        <field name="state"/>
+                                        <field name="currency_id" invisible='True'/>
+                                    </tree>
+                                </field>
+                                <group class="oe_subtotal_footer oe_right" colspan="2" name="payment_total">
+                                    <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+                                        <label for="amount_total" />
+                                    </div>
+                                    <field name="amount_total" nolabel="1" class="oe_subtotal_footer_separator"/>
+                                </group>
+                                <div class="oe_clear"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+
+        <!-- APPROVAL SETTLEMENTS -->
+
+        <record id="approval_settlements_tree_view" model="ir.ui.view">
+            <field name="name">approval.settlements.tree</field>
+            <field name="model">payment.request</field>
+            <field name="arch" type="xml">
+                <tree decoration-info="state == 'draft'" decoration-danger="state == 'confirm'" decoration-muted="state == 'cancel'" string="Payment Request">
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="user_id"/>
+                    <field name="employee_id"/>
+                    <field name="advance_payment_id"/>
+                    <field name="amount_aap"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="approval_settlements_form_view" model="ir.ui.view">
+            <field name="name">approval.settlements.form</field>
+            <field name="model">payment.request</field>
+            <field name="arch" type="xml">
+                <form string="Approval Settlements">
+                    <header>
+                        <button name="payment_open" type="object" states="draft" string="Confirm" class="oe_highlight" groups="aa_payment_request.group_payment_request_confirm"/>
+                        <button name="payment_draft" type="object" states="confirm" string="Set to Draft"/>
+                        <button name="payment_done" type="object" states="confirm" string="Approve" class="oe_highlight" groups="aa_payment_request.group_payment_request_approve"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,confirm,done,paid"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button class="oe_stat_button" name="open_journal" type="object" icon="fa-pencil">
+                                <field string="Journal" name="count_journal" widget="statinfo"/>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name"/>
+                            </h1>
+                        </div>
+                        <group col="4">
+                            <field name="date"/>
+                            <field name="user_id"/>
+                            <field name="employee_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="department_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="description" colspan="4"/>
+                            <field name="currency_id" invisible='True'/>
+                            <field name="type" invisible='True'/>
+                        </group>
+                        <group col="4" string="AAP">
+                            <field name="advance_payment_id" attrs="{'required':[('type','=','as')]}" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="amount_aap"/>
+                            <field name="amount_diff"/>
+                        </group>
+                        <group string="Settlement Line">
+                            <field name="settlement_line" nolabel="1" widget="one2many_list">
+                                <tree editable="bottom">
+                                    <field name="name"/>
+                                    <field name="partner_id"/>
+                                    <field name="account_id"/>
+                                    <field name="amount"/>
+                                </tree>
+                            </field>
+                            <group class="oe_subtotal_footer oe_right" colspan="2" name="amount_settlement">
+                                <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+                                    <label for="settlement_total" />
+                                </div>
+                                <field name="settlement_total" nolabel="1" class="oe_subtotal_footer_separator"/>
+                            </group>
+                            <div class="oe_clear"/>
+                        </group>
+                        <group string="Residual Line">
+                            <field name="payment_line" nolabel="1" widget="one2many_list">
+                                <tree editable="bottom">
+                                    <field name="name"/>
+                                    <field name="amount"/>
+                                    <field name="state"/>
+                                    <field name="currency_id" invisible='True'/>
+                                </tree>
+                            </field>
+                            <group class="oe_subtotal_footer oe_right" colspan="2" name="payment_total">
+                                <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+                                    <label for="amount_total" />
+                                </div>
+                                <field name="amount_total" nolabel="1" class="oe_subtotal_footer_separator"/>
+                            </group>
+                            <div class="oe_clear"/>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+
+        <!-- ACTION PAYMENT REQUEST -->
+
+        <record model="ir.actions.act_window" id="approval_payment_request_action">
+            <field name="name">Approval Payment Request</field>
+            <field name="res_model">payment.request</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('type', '=', 'apr')]</field>
+            <field name="view_id" ref="approval_payment_request_tree_view"/>
+            <field name="context">{'default_type':'apr'}</field>
+        </record>
+
+        <record id="action_tree_view_approval_payment_request" model="ir.actions.act_window.view">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="approval_payment_request_tree_view"/>
+            <field name="act_window_id" ref="approval_payment_request_action"/>
+        </record>
+
+        <record id="action_form_view_approval_payment_request" model="ir.actions.act_window.view">
+            <field name="sequence" eval="2"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="approval_payment_request_form_view"/>
+            <field name="act_window_id" ref="approval_payment_request_action"/>
+        </record>
+
+
+        <!-- ACTION ADVANCE PAYMENT -->
+
+        <record model="ir.actions.act_window" id="approval_advance_payment_action">
+            <field name="name">Approval Advance Payment</field>
+            <field name="res_model">payment.request</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('type', '=', 'aap')]</field>
+            <field name="view_id" ref="approval_advance_payment_tree_view"/>
+            <field name="context">{'default_type':'aap'}</field>
+        </record>
+
+        <record id="action_tree_view_approval_advance_payment" model="ir.actions.act_window.view">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="approval_advance_payment_tree_view"/>
+            <field name="act_window_id" ref="approval_advance_payment_action"/>
+        </record>
+
+        <record id="action_form_view_approval_advance_payment" model="ir.actions.act_window.view">
+            <field name="sequence" eval="2"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="approval_advance_payment_form_view"/>
+            <field name="act_window_id" ref="approval_advance_payment_action"/>
+        </record>
+
+
+        <!-- ACTION APPROVAL SETTLEMENTS -->
+
+        <record model="ir.actions.act_window" id="approval_settlements_action">
+            <field name="name">Approval Settlements</field>
+            <field name="res_model">payment.request</field>
+
+            <field name="domain">[('type', '=', 'as')]</field>
+            <field name="view_id" ref="approval_settlements_tree_view"/>
+            <field name="context">{'default_type':'as'}</field>
+        </record>
+
+        <record id="action_tree_view_approval_settlements" model="ir.actions.act_window.view">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="approval_settlements_tree_view"/>
+            <field name="act_window_id" ref="approval_settlements_action"/>
+        </record>
+
+        <record id="action_form_view_approval_settlements" model="ir.actions.act_window.view">
+            <field name="sequence" eval="2"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="approval_settlements_form_view"/>
+            <field name="act_window_id" ref="approval_settlements_action"/>
+        </record>
+
+
+        <!-- SEQUENCE -->
+
+        <record id="seq_approval_payment_request" model="ir.sequence">
+            <field name="name">Approval Payment Request</field>
+            <field name="code">approval.payment.request</field>
+            <field name="prefix">APR/%(y)s/%(month)s/</field>
+            <field name="padding">5</field>
+        </record>
+
+        <record id="seq_approval_advance_payment" model="ir.sequence">
+            <field name="name">Approval Advance Payment</field>
+            <field name="code">approval.advance.payment</field>
+            <field name="prefix">AAP/%(y)s/%(month)s/</field>
+            <field name="padding">5</field>
+        </record>
+
+        <record id="seq_approval_settlements" model="ir.sequence">
+            <field name="name">Approval Settlements</field>
+            <field name="code">approval.settlements</field>
+            <field name="prefix">AS/%(y)s/%(month)s/</field>
+            <field name="padding">5</field>
+        </record>
+
+
+        <!-- MENU ITEM -->
+
+        <menuitem id="menu_approval_payment" name="Approval" parent="account.menu_finance" sequence="3"/>
+        <menuitem id="menu_approval_payment_request" name="Payment Request" parent="menu_approval_payment" action="approval_payment_request_action"/>
+        <menuitem id="menu_approval_advance_payment" name="Advance Payment" parent="menu_approval_payment" action="approval_advance_payment_action"/>
+        <menuitem id="menu_approval_approval_settlements" name="Settlements" parent="menu_approval_payment" action="approval_settlements_action"/>
+
+
+        <!-- INHERIT BANK STATEMENT -->
+
+        <record id="inherit_bank_statement_line_form" model="ir.ui.view">
+            <field name="name">bank.statement.line.inherit</field>
+            <field name="model">account.bank.statement</field>
+            <field name="inherit_id" ref="account.view_bank_statement_form"/>
+            <field name="arch" type="xml">
+                <field name="payment_ref" position="before">
+                    <field name="payment_request_line_id" string="APR/AAP/AS"/>
+                </field>
+            </field>
+        </record>
+
+
+    </data>
+</odoo>
